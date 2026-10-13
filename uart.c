@@ -2,29 +2,38 @@
 #include <LPC21xx.h>
 #include "types.h"
 #include "uart_defines.h"
+#include "esp01.h"
+
+#define BUFFER_SIZE     350
 u32 flag;
 //extern s8 t;
-
-#if U0_TX_RX_INT_EN!=0
+u32 flag;
+extern s8 t[350];
+extern u32 i;
+//#if U0_TX_RX_INT_EN!=0
 
 void U0_TxRx_ISR() __irq
 {
-	u32 status;
-  s8 t;	
-	status=U0IIR;
-	if(((status>>1)&3)==RDA_INT)
-	{
-		t=U0RBR;
-		IOPIN0^=1<<U0_RX_STATUS_LED;
-	}
-	if(((status>>1)&3)==THRE_INT)
+//    u32 status;
+      s8 ch;    
+
+    if(((U0IIR>>2)&1))
+    {
+        ch=U0RBR;
+        if(i<(BUFFER_SIZE-1))
+        {
+            t[i++]=ch;
+            t[i]='\0';
+        }    
+    }
+	/*if(((status>>1)&3)==THRE_INT)
 	{
 		flag=1;
 	  IOPIN0^=1<<U0_TX_STATUS_LED;
-	}
+	}*/
 	VICVectAddr=0;
 }
-#endif
+//#endif
 
 void UART0_Init(void) 
 {
@@ -39,7 +48,9 @@ void UART0_Init(void)
 	//reset DLAB bit
 	U0LCR&=~(1<<DLAB_BIT);
 	
-	#if (U0_TX_INT_EN > 0)
+	U0IER|=1<<1;//THRE_INT_EN_BIT;
+	
+	/*#if (U0_TX_INT_EN > 0)
 	{
 	  U0IER|=1<<THRE_INT_EN_BIT;
 	}	
@@ -49,9 +60,9 @@ void UART0_Init(void)
 	{
 	  U0IER|=1<<RDA_INT_EN_BIT;
 	}	
-	#endif
+	#endif*/
 	
-	#if U0_TX_RX_INT_EN!=0
+	//#if U0_TX_RX_INT_EN!=0
 	//def all interrupt are irq type
 	//VICIntSelect=0;
 	//cfg U0 interrupt via VIC
@@ -63,7 +74,7 @@ void UART0_Init(void)
 	//
 	IODIR0|=(1<<U0_TX_STATUS_LED)|
 	        (1<<U0_RX_STATUS_LED); 
-	#endif
+	//#endif
 } 
 
 void U0_Tx(u8 sByte) 
