@@ -1,0 +1,2 @@
+# ThermoSet-Connect-An-IoT-Based-Local-and-Remote-Temperature-Monitoring-and-Set-Point-Control
+ThermoSet Connect is an IoT-based temperature monitoring system using LPC2148 and LM35. It supports local and remote set-point configuration, stores settings in AT24C256 EEPROM, and uses ESP-01 Wi-Fi to communicate with ThingSpeak. When temperature exceeds the configured limit, it triggers a buzzer and cloud alert.
