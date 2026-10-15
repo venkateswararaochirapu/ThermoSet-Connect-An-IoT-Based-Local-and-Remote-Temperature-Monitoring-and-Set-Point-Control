@@ -312,6 +312,3 @@ Add photos of your board in `docs/images/` and remove the comment markers below.
 **Venkateswara Rao Chirapu** - [@venkateswararaochirapu](https://github.com/venkateswararaochirapu)
 Major Project: *ThermoSet Connect - IoT-Based Local and Remote Temperature Monitoring and Set-Point Control*
 
-## 📄 License
-
-Released under the [MIT License](LICENSE).
