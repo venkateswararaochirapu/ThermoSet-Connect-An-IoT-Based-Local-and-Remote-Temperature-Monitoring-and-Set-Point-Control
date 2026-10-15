@@ -63,7 +63,7 @@ Useful for: laboratories, server rooms, cold-storage facilities and industrial e
 
 ## 🧩 Block Diagram
 
-<p align="center"><img src="docs/images/block_diagram.svg" alt="Block diagram" width="900"></p>
+<p align="center"><img src="docs/images/block_diagram.svg" alt="Block diagram" width="900"></p> 
 
 **Reading the diagram**
 
