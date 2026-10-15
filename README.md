@@ -203,10 +203,6 @@ Open `esp01_defines.h` and replace the placeholders:
 #define TS2_READ_API_KEY  "YOUR_CHANNEL2_READ_KEY"
 #define TS2_CHANNEL_ID    "<your channel 2 id>"
 ```
-> ⚠️ **Never commit your real credentials.** After editing, run this once so Git ignores your local changes to that file:
-> ```bash
-> git update-index --skip-worktree esp01_defines.h
-> ```
 
 **3. Create the Keil project**
 
