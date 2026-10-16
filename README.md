@@ -61,7 +61,8 @@ Useful for: laboratories, server rooms, cold-storage facilities and industrial e
 
 ## 🧩 Block Diagram
 
-<p align="center"><img src="images/block_diagram.svg" alt="Block diagram" width="900"></p>
+<img width="1101" height="641" alt="block_diagram" src="https://github.com/user-attachments/assets/7bd1c61c-13b0-4104-963a-06971a44b10f" />
+
 
 **Reading the diagram**
 
@@ -130,7 +131,8 @@ Power on -> init UART, I2C, LCD, keypad, EINT2, RTC
 
 ### Device states (normal use, alert, menu)
 
-<p align="center"><img src="images/lcd_screens.svg" alt="LCD screens - device states" width="900"></p>
+<img width="1101" height="636" alt="lcd_screens" src="https://github.com/user-attachments/assets/62354a1c-0b10-47e5-b507-6a93e7784d80" />
+
 
 | Line 1 | Line 2 | Meaning |
 |---|---|---|
@@ -143,7 +145,8 @@ Power on -> init UART, I2C, LCD, keypad, EINT2, RTC
 
 While the ESP-01 talks to ThingSpeak, **line 1 shows the command or action** and **line 2 shows the reply received**.
 
-<p align="center"><img src="images/lcd_cloud_status.svg" alt="LCD screens - sending and reading data" width="900"></p>
+<img width="1101" height="906" alt="lcd_cloud_status" src="https://github.com/user-attachments/assets/24143405-7533-4675-bdf4-bada1d2cd666" />
+
 
 | Stage | Line 1 | Line 2 | Meaning |
 |---|---|---|---|
@@ -163,7 +166,8 @@ While the ESP-01 talks to ThingSpeak, **line 1 shows the command or action** and
 
 Press the **button** to open the menu. The menu is driven from the keypad.
 
-<p align="center"><img src="images/keypad_menu.svg" alt="Keypad menu" width="800"></p>
+<img width="1001" height="471" alt="keypad_menu" src="https://github.com/user-attachments/assets/8f812509-751b-4524-9692-0b3643d748a0" />
+
 
 | Page | Keys | Action |
 |---|---|---|
@@ -174,7 +178,8 @@ Press the **button** to open the menu. The menu is driven from the keypad.
 
 ## 📡 ESP-01 AT Commands
 
-<p align="center"><img src="images/at_commands.svg" alt="AT command sequence" width="900"></p>
+<img width="1101" height="701" alt="at_commands" src="https://github.com/user-attachments/assets/09cef388-20c9-4719-a8a2-d4db1973a189" />
+
 
 Each Wi-Fi bring-up step is tried **up to 5 times**. If `AT`, `ATE0`, `AT+CIPMUX`, `AT+CWMODE` or the join fails, the system starts in **offline (local-only) mode**. After a command is sent, the firmware waits the full time shown and then looks for the keyword in the receive buffer.
 
@@ -195,7 +200,8 @@ Each Wi-Fi bring-up step is tried **up to 5 times**. If `AT`, `ATE0`, `AT+CIPMUX
 
 ## ☁️ ThingSpeak Setup
 
-<p align="center"><img src="images/thingspeak_channels.svg" alt="ThingSpeak channels" width="900"></p>
+<img width="1101" height="521" alt="thingspeak_channels" src="https://github.com/user-attachments/assets/b60f6fb5-f868-4d4b-823c-d7baad231a6f" />
+
 
 1. Create a free account at [thingspeak.com](https://thingspeak.com).
 2. Create **Channel 1 - Monitoring**: `Field 1 = Temperature`, `Field 2 = Alert`.
