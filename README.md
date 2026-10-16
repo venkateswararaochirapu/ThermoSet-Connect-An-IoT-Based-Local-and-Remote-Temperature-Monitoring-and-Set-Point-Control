@@ -10,7 +10,7 @@
 ![Cloud](https://img.shields.io/badge/Cloud-ThingSpeak-2ea44f?style=for-the-badge)
 ![WiFi](https://img.shields.io/badge/Wi--Fi-ESP--01-8250df?style=for-the-badge)
 
-<img src="docs/images/block_diagram.svg" alt="ThermoSet Connect block diagram" width="900">
+"C:\Users\venka\Downloads\block_diagram.svg"
 
 </div>
 
