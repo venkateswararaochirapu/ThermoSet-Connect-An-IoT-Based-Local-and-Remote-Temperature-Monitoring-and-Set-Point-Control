@@ -61,7 +61,8 @@ Useful for: laboratories, server rooms, cold-storage facilities and industrial e
 
 ## 🧩 Block Diagram
 
-<img width="1101" height="641" alt="block_diagram" src="https://github.com/user-attachments/assets/c3463939-377c-429a-8a73-bcd2dfbccb4b" />
+<img width="1101" height="641" alt="block_diagram" src="https://github.com/user-attachments/assets/7ff0df4c-4073-4120-891e-d656bbcf9a4d" />
+
 
 
 **Reading the diagram**
