@@ -41,7 +41,7 @@
 * sounds a **buzzer** and lights an **alert LED** locally, and
 * posts an **alert** to the cloud immediately.
 
-The set point can be changed **locally** (switch + 4x4 keypad) or **remotely** (ThingSpeak channel). It is stored in an **AT24C256 EEPROM**, so it survives power failures.
+The set point can be changed **locally** (button + 4x4 keypad) or **remotely** (ThingSpeak channel). It is stored in an **AT24C256 EEPROM**, so it survives power failures.
 
 Useful for: laboratories, server rooms, cold-storage facilities and industrial equipment.
 
@@ -53,7 +53,7 @@ Useful for: laboratories, server rooms, cold-storage facilities and industrial e
 | ☁️ | Temperature uploaded to ThingSpeak at a fixed interval (150 s) |
 | 🚨 | Local alarm (buzzer + LED) and cloud alert when temperature > set point |
 | 🔕 | Press a keypad key during an alarm to silence the buzzer |
-| ⌨️ | Local set-point change using switch interrupt (EINT2) and keypad menu |
+| ⌨️ | Local set-point change using button interrupt (EINT2) and keypad menu |
 | 🌐 | Remote set-point change from a dedicated ThingSpeak channel (checked every 90 s) |
 | 💾 | Set point and previous set point stored in EEPROM (power-fail safe) |
 | 🕒 | Time and date can be set from the keypad menu (on-chip RTC) |
@@ -61,13 +61,11 @@ Useful for: laboratories, server rooms, cold-storage facilities and industrial e
 
 ## 🧩 Block Diagram
 
-<img width="1101" height="641" alt="block_diagram" src="https://github.com/user-attachments/assets/7ff0df4c-4073-4120-891e-d656bbcf9a4d" />
-
-
+<p align="center"><img src="images/block_diagram.svg" alt="Block diagram" width="900"></p>
 
 **Reading the diagram**
 
-* **Inputs (left):** LM35 → ADC, switch → external interrupt, keypad → GPIO, EEPROM ↔ I2C.
+* **Inputs (left):** LM35 → ADC, button → external interrupt, keypad → GPIO, EEPROM ↔ I2C.
 * **Outputs (right):** LCD (8-bit GPIO), buzzer + LED (GPIO), ESP-01 ↔ UART0.
 * **Cloud:** ESP-01 talks to ThingSpeak over Wi-Fi; a laptop or mobile views the graphs and can write a new set point.
 
@@ -79,7 +77,7 @@ Useful for: laboratories, server rooms, cold-storage facilities and industrial e
 * LM35 temperature sensor
 * AT24C256 I2C EEPROM
 * 4x4 matrix keypad
-* Push switch (external interrupt)
+* Push button (external interrupt)
 * 16x2 character LCD
 * Buzzer and alert LED
 * ESP-01 (ESP8266) Wi-Fi module
@@ -101,7 +99,7 @@ Useful for: laboratories, server rooms, cold-storage facilities and industrial e
 | Keypad columns | P1.20 - P1.23 | |
 | Buzzer | P1.24 | |
 | Alert LED | P1.25 | |
-| Switch (menu request) | P0.7 (EINT2) | falling-edge interrupt |
+| Button (menu request) | P0.7 (EINT2) | falling-edge interrupt |
 | LM35 output | P0.28 (AD0.1) | 10 mV / degree C |
 | EEPROM SCL / SDA | P0.2 / P0.3 | I2C0, address 0x50 |
 | ESP-01 TX / RX | P0.1 (RXD0) / P0.0 (TXD0) | UART0, 9600 baud |
@@ -120,7 +118,7 @@ Power on -> init UART, I2C, LCD, keypad, EINT2, RTC
               every 150 s                -> upload temperature (Channel 1)
               every  90 s                -> read remote set point (Channel 2)
                                             if different -> save to EEPROM
-              switch pressed             -> open keypad menu
+              button pressed             -> open keypad menu
 ```
 
 * **Alert rule:** alert only when `temperature > set point`; equal is not an alert.
@@ -130,25 +128,42 @@ Power on -> init UART, I2C, LCD, keypad, EINT2, RTC
 
 ## 🖥️ LCD Output
 
-<img width="1101" height="641" alt="lcd_screens" src="https://github.com/user-attachments/assets/022664d4-84d1-4f7a-b281-18837ec7a592" />
+### Device states (normal use, alert, menu)
 
+<p align="center"><img src="images/lcd_screens.svg" alt="LCD screens - device states" width="900"></p>
 
 | Line 1 | Line 2 | Meaning |
 |---|---|---|
 | `10:25:42 SP:30` | `T:28C OK` | Time, set point, temperature - normal |
 | `10:26:10 SP:30` | `T:35C ALERT!` | Temperature above set point |
 | `10:26:30 SP:30` | `T:35C ALRT(sil)` | Alert active, buzzer silenced |
-| `Cloud` | `Checking SP...` | Polling remote set point |
-| `Cloud` | `SP update OK` | New set point received and saved |
+| `WiFi` | `Offline - Local` | Wi-Fi failed, local monitoring continues |
+
+### Sending and reading data (cloud status)
+
+While the ESP-01 talks to ThingSpeak, **line 1 shows the command or action** and **line 2 shows the reply received**.
+
+<p align="center"><img src="images/lcd_cloud_status.svg" alt="LCD screens - sending and reading data" width="900"></p>
+
+| Stage | Line 1 | Line 2 | Meaning |
+|---|---|---|---|
+| Wi-Fi | `Joining WiFi` | `Waiting...` then `WIFI CONNECTED` | Joining the router |
+| Sending | `AT+CIPSTART` | `CONNECT` | TCP link to ThingSpeak opened |
+| Sending | `AT+CIPSEND` | `>` | Module ready for data |
+| Sending | `Sending data` | `SEND OK` | Temperature / alert uploaded |
+| Reading | `Cloud` | `Checking SP...` | Polling the remote set point |
+| Reading | `Reading cloud` | `+IPD,` | Reply received from ThingSpeak |
+| Reading | `Cloud` | `Updating SP...` / `SP update OK` | New set point found and saved |
+| Reading | `Cloud` | `SP unchanged` | Cloud value equals current set point |
+| Local change | `Updating Cloud` | `Cloud Updated` | Keypad set point pushed to Channel 2 |
+| Errors | `Cloud` | `Write failed` / `Read failed` | Upload or read did not succeed |
+| Errors | any command | `ERROR` | ESP-01 replied with ERROR or FAIL |
 
 ## ⌨️ Keypad Menu
 
-Press the **switch** to open the menu. The menu is driven from the keypad.
+Press the **button** to open the menu. The menu is driven from the keypad.
 
-<img width="1001" height="471" alt="keypad_menu" src="https://github.com/user-attachments/assets/4548fe5d-927d-4380-8a45-85d6a86d8608" />
-
-
-
+<p align="center"><img src="images/keypad_menu.svg" alt="Keypad menu" width="800"></p>
 
 | Page | Keys | Action |
 |---|---|---|
@@ -159,27 +174,28 @@ Press the **switch** to open the menu. The menu is driven from the keypad.
 
 ## 📡 ESP-01 AT Commands
 
-<img width="1101" height="701" alt="at_commands" src="https://github.com/user-attachments/assets/766eceb0-4a81-4f6b-8654-4639ebca92cc" />
+<p align="center"><img src="images/at_commands.svg" alt="AT command sequence" width="900"></p>
 
+Each Wi-Fi bring-up step is tried **up to 5 times**. If `AT`, `ATE0`, `AT+CIPMUX`, `AT+CWMODE` or the join fails, the system starts in **offline (local-only) mode**. After a command is sent, the firmware waits the full time shown and then looks for the keyword in the receive buffer.
 
-| Step | Command | Expected reply |
-|---|---|---|
-| Reset link | `AT+CWQAP` | `WIFI DISCONNECT` / `OK` |
-| Check module | `AT` | `OK` |
-| Echo off | `ATE0` | `OK` |
-| Single connection | `AT+CIPMUX=0` | `OK` |
-| Station mode | `AT+CWMODE=1` | `OK` |
-| Join Wi-Fi | `AT+CWJAP="SSID","PASSWORD"` | `WIFI CONNECTED`, `WIFI GOT IP` |
-| Open TCP | `AT+CIPSTART="TCP","<host>",80` | `CONNECT` |
-| Send length | `AT+CIPSEND=<length>` | `>` |
-| Upload | `GET /update?api_key=<KEY>&field1=<temp>&field2=<0/1>` | `SEND OK` |
-| Read set point | `GET /channels/<ID>/fields/1.json?api_key=<KEY>&results=1` | `+IPD,...` |
-| Close | `AT+CIPCLOSE` | `CLOSED` |
+| Step | Command sent | Keyword expected | Wait |
+|---|---|---|---|
+| Leave old network | `AT+CWQAP` | `WIFI DISCONNECT` (result ignored) | 2 s |
+| Check module | `AT` | `OK` | 1.5 s |
+| Echo off | `ATE0` | `OK` | 1.5 s |
+| Single connection | `AT+CIPMUX=0` | `OK` | 1.5 s |
+| Station mode | `AT+CWMODE=1` | `OK` | 1.5 s |
+| Join Wi-Fi | `AT+CWJAP="SSID","PASSWORD"` | `WIFI CONNECTED` | 3 s |
+| Get IP | (no command) | `WIFI GOT IP` | 1 s |
+| Open TCP | `AT+CIPSTART="TCP","<host>",80` | `CONNECT` | 3 s |
+| Send length | `AT+CIPSEND=<length>` | `>` | 2 s (write) / 5 s (read) |
+| Upload | `GET /update?api_key=<KEY>&field1=<temp>&field2=<0/1>` | `SEND OK` (after a 5 s pause) | 8 s |
+| Read set point | `GET /channels/<ID>/fields/1.json?api_key=<KEY>&results=1` | `+IPD,` (after a 5 s pause) | 5 s |
+| Close | `AT+CIPCLOSE` | none awaited | 1 s delay |
 
 ## ☁️ ThingSpeak Setup
 
-<img width="1101" height="521" alt="thingspeak_channels" src="https://github.com/user-attachments/assets/bed692b3-e7b1-465e-869a-3991a7cd45b1" />
-
+<p align="center"><img src="images/thingspeak_channels.svg" alt="ThingSpeak channels" width="900"></p>
 
 1. Create a free account at [thingspeak.com](https://thingspeak.com).
 2. Create **Channel 1 - Monitoring**: `Field 1 = Temperature`, `Field 2 = Alert`.
@@ -187,7 +203,7 @@ Press the **switch** to open the menu. The menu is driven from the keypad.
 4. Note both **Channel IDs**, **Write API keys** and **Read API keys**.
 5. To change the set point remotely, write a new value to Channel 2, Field 1 (ThingSpeak website or app).
 
-> The image above is an illustration. Add your own screenshots to `docs/images/`.
+> The image above is an illustration. Add your own screenshots to `images/`.
 
 ## 🚀 Build, Configure & Flash
 
@@ -209,6 +225,10 @@ Open `esp01_defines.h` and replace the placeholders:
 #define TS2_READ_API_KEY  "YOUR_CHANNEL2_READ_KEY"
 #define TS2_CHANNEL_ID    "<your channel 2 id>"
 ```
+> ⚠️ **Never commit your real credentials.** After editing, run this once so Git ignores your local changes to that file:
+> ```bash
+> git update-index --skip-worktree esp01_defines.h
+> ```
 
 **3. Create the Keil project**
 
@@ -284,23 +304,23 @@ ThermoSet-Connect/
 |-- rtc.c / .h / _defines.h       on-chip RTC (time and date)
 |-- delay.c / .h              delay routines
 |-- types.h, defines.h        common types and macros
-|-- docs/images/              diagrams used in this README
+|-- images/              diagrams used in this README
 |-- .gitignore, LICENSE
 `-- README.md
 ```
 
 ## 📸 Hardware Photos
 
-Add photos of your board in `docs/images/` and remove the comment markers below.
+Add photos of your board in `images/` and remove the comment markers below.
 
 <!--
 <p align="center">
-  <img src="docs/images/setup_photo.jpg" alt="Complete hardware setup" width="420">
-  <img src="docs/images/lcd_photo.jpg" alt="LCD showing temperature" width="420">
+  <img src="images/setup_photo.jpg" alt="Complete hardware setup" width="420">
+  <img src="images/lcd_photo.jpg" alt="LCD showing temperature" width="420">
 </p>
 <p align="center">
-  <img src="docs/images/alert_photo.jpg" alt="Alert condition" width="420">
-  <img src="docs/images/thingspeak_screenshot.png" alt="ThingSpeak dashboard" width="420">
+  <img src="images/alert_photo.jpg" alt="Alert condition" width="420">
+  <img src="images/thingspeak_screenshot.png" alt="ThingSpeak dashboard" width="420">
 </p>
 -->
 
@@ -318,3 +338,6 @@ Add photos of your board in `docs/images/` and remove the comment markers below.
 **Venkateswara Rao Chirapu** - [@venkateswararaochirapu](https://github.com/venkateswararaochirapu)
 Major Project: *ThermoSet Connect - IoT-Based Local and Remote Temperature Monitoring and Set-Point Control*
 
+## 📄 License
+
+Released under the [MIT License](LICENSE).
