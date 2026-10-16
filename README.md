@@ -129,7 +129,8 @@ Power on -> init UART, I2C, LCD, keypad, EINT2, RTC
 
 ## 🖥️ LCD Output
 
-<img width="1101" height="641" alt="lcd_screens" src="https://github.com/user-attachments/assets/435de9dd-f1f9-4586-bf96-293ee60fa7af" />
+<img width="1101" height="641" alt="lcd_screens" src="https://github.com/user-attachments/assets/022664d4-84d1-4f7a-b281-18837ec7a592" />
+
 
 | Line 1 | Line 2 | Meaning |
 |---|---|---|
