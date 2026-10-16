@@ -145,7 +145,8 @@ Power on -> init UART, I2C, LCD, keypad, EINT2, RTC
 
 Press the **switch** to open the menu. The menu is driven from the keypad.
 
-<img width="1101" height="641" alt="block_diagram" src="https://github.com/user-attachments/assets/3aadd96b-4c6f-4d5e-8243-304b827c1c60" />
+<img width="1001" height="471" alt="keypad_menu" src="https://github.com/user-attachments/assets/4548fe5d-927d-4380-8a45-85d6a86d8608" />
+
 
 
 
