@@ -10,8 +10,6 @@
 ![Cloud](https://img.shields.io/badge/Cloud-ThingSpeak-2ea44f?style=for-the-badge)
 ![WiFi](https://img.shields.io/badge/Wi--Fi-ESP--01-8250df?style=for-the-badge)
 
-<img src="images/block_diagram.svg" alt="ThermoSet Connect block diagram" width="900">
-
 </div>
 
 ---
@@ -63,7 +61,8 @@ Useful for: laboratories, server rooms, cold-storage facilities and industrial e
 
 ## 🧩 Block Diagram
 
-<p align="center"><img src="docs/images/block_diagram.svg" alt="Block diagram" width="900"></p> 
+<img width="1101" height="641" alt="block_diagram" src="https://github.com/user-attachments/assets/c3463939-377c-429a-8a73-bcd2dfbccb4b" />
+
 
 **Reading the diagram**
 
@@ -130,7 +129,7 @@ Power on -> init UART, I2C, LCD, keypad, EINT2, RTC
 
 ## 🖥️ LCD Output
 
-<p align="center"><img src="docs/images/lcd_screens.svg" alt="LCD screens" width="900"></p>
+<img width="1101" height="641" alt="lcd_screens" src="https://github.com/user-attachments/assets/435de9dd-f1f9-4586-bf96-293ee60fa7af" />
 
 | Line 1 | Line 2 | Meaning |
 |---|---|---|
@@ -144,7 +143,8 @@ Power on -> init UART, I2C, LCD, keypad, EINT2, RTC
 
 Press the **switch** to open the menu. The menu is driven from the keypad.
 
-<p align="center"><img src="docs/images/keypad_menu.svg" alt="Keypad menu" width="800"></p>
+<img width="1001" height="471" alt="keypad_menu" src="https://github.com/user-attachments/assets/d075fabb-9a4f-4c2e-887c-f9931d8985da" />
+
 
 | Page | Keys | Action |
 |---|---|---|
@@ -155,7 +155,8 @@ Press the **switch** to open the menu. The menu is driven from the keypad.
 
 ## 📡 ESP-01 AT Commands
 
-<p align="center"><img src="docs/images/at_commands.svg" alt="AT command sequence" width="900"></p>
+<img width="1101" height="701" alt="at_commands" src="https://github.com/user-attachments/assets/766eceb0-4a81-4f6b-8654-4639ebca92cc" />
+
 
 | Step | Command | Expected reply |
 |---|---|---|
@@ -173,7 +174,8 @@ Press the **switch** to open the menu. The menu is driven from the keypad.
 
 ## ☁️ ThingSpeak Setup
 
-<p align="center"><img src="docs/images/thingspeak_channels.svg" alt="ThingSpeak channels" width="900"></p>
+<img width="1101" height="521" alt="thingspeak_channels" src="https://github.com/user-attachments/assets/bed692b3-e7b1-465e-869a-3991a7cd45b1" />
+
 
 1. Create a free account at [thingspeak.com](https://thingspeak.com).
 2. Create **Channel 1 - Monitoring**: `Field 1 = Temperature`, `Field 2 = Alert`.
